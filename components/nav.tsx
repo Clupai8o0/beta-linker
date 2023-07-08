@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import SearchBar from "./search";
 
 const Nav = () => {
 	return (
@@ -24,8 +25,9 @@ const Nav = () => {
 				</Link>
 			</div>
 
-			{/* TODO: search bar */}
-			<div></div>
+			<div className="hidden md:flex w-2/3">
+				<SearchBar classNames="w-full" />
+			</div>
 
 			<div>
 				<Link href="/add">
