@@ -17,13 +17,16 @@
 		"@prisma/client": "^4.16.2",
 		"framer-motion": "^10.12.18",
 		"next": "13.4.9",
+		"puppeteer": "^20.8.0",
 		"react": "18.2.0",
-		"react-dom": "18.2.0"
+		"react-dom": "18.2.0",
+		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
 		"@types/node": "20.4.1",
 		"@types/react": "18.2.14",
 		"@types/react-dom": "18.2.6",
+		"@types/uuid": "^9.0.2",
 		"autoprefixer": "10.4.14",
 		"postcss": "8.4.25",
 		"prisma": "^4.15.0",
