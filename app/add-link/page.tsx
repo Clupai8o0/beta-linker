@@ -62,7 +62,7 @@ function Add() {
 					website_url,
 					github_url,
 					desc,
-					tags,
+					tags: tags.map((tag) => tag.text),
 				}),
 			});
 			router.push("/");

@@ -1,10 +1,29 @@
+"use client"
+
 import React from "react";
 
-const SearchBar = ({ classNames }: { classNames?: string }) => {
+const SearchBar = ({
+	classNames,
+	query,
+	setQuery,
+	setLinks,
+}: {
+	classNames?: string;
+	query: string;
+	setQuery: React.Dispatch<React.SetStateAction<string>>;
+	setLinks: React.Dispatch<React.SetStateAction<any[]>>;
+}) => {
+	const handleSearch = async (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
+		const res = await fetch(`/api/search-links?query=${query}`);
+		const links = (await res.json()).data;
+		setLinks(links);
+	};
+
 	return (
-		<form className={classNames}>
+		<form className={classNames} onSubmit={handleSearch}>
 			<label
-				htmlFor="default-search"
+				htmlFor="search"
 				className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white hidden"
 			>
 				Search
@@ -29,11 +48,11 @@ const SearchBar = ({ classNames }: { classNames?: string }) => {
 					</svg>
 				</div>
 				<input
-					type="search"
-					id="default-search"
+					type="text"
 					className="block w-full p-4 pl-10 text-sm border rounded-lg bg-transparent border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
 					placeholder="Search Mockups, Logos..."
-					required
+					value={query}
+					onChange={(e) => setQuery(e.target.value)}
 				/>
 				<button
 					type="submit"
