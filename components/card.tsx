@@ -45,9 +45,9 @@ const Card = ({
 	const router = useRouter();
 
 	const handleDelete = async () => {
-		// await fetch(`${process.env.url}/api/delete-link?id=${id}`, {
-		// 	method: "DELETE",
-		// });
+		await fetch(`/api/delete-link?id=${id}`, {
+			method: "DELETE",
+		});
 		router.refresh();
 	};
 
