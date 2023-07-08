@@ -48,7 +48,7 @@ const Card = ({
 		await fetch(`/api/delete-link?id=${id}`, {
 			method: "DELETE",
 		});
-		router.refresh();
+		router.replace("/")
 	};
 
 	return (

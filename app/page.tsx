@@ -1,8 +1,11 @@
 "use client";
 
+import React, { Suspense, useEffect, useState } from "react";
+
 import Card from "@/components/card";
+import Loader from "@/components/loader";
 import SearchBar from "@/components/search";
-import React, { useEffect, useState } from "react";
+import Loading from "./loading";
 
 export default function Home() {
 	const [query, setQuery] = useState("");
@@ -13,7 +16,6 @@ export default function Home() {
 			method: "GET",
 		});
 		const data = await res.json();
-		console.log(data)
 		setLinks(data.data);
 	};
 
@@ -31,9 +33,11 @@ export default function Home() {
 			/>
 
 			<div className="p-4 flex flex-col gap-4">
-				{links.map((link: any) => (
-					<Card key={link.id} {...link} />
-				))}
+				{links.length === 0 ? (
+					<Loading />
+				) : (
+					links.map((link: any) => <Card key={link.id} {...link} />)
+				)}
 			</div>
 		</main>
 	);

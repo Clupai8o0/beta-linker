@@ -25,10 +25,6 @@ const Nav = () => {
 				</Link>
 			</div>
 
-			<div className="hidden md:flex w-2/3">
-				<SearchBar classNames="w-full" />
-			</div>
-
 			<div>
 				<Link href="/add-link">
 					<button>
