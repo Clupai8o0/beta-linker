@@ -30,7 +30,7 @@ const Nav = () => {
 			</div>
 
 			<div>
-				<Link href="/add">
+				<Link href="/add-link">
 					<button>
 						<img src="/add.svg" alt="add new link button" />
 					</button>
