@@ -6,5 +6,6 @@
 - [x] Authentication (Middleware)
 - [ ] Cleaning code
 - [x] Optimization (Image)
-- [ ] Global state management
+- [x] Global state management
 - [ ] Security rules
+- [ ] Definitely reduce and manage font + sizing

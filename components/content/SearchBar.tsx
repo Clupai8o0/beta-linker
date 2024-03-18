@@ -3,35 +3,32 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useSetRecoilState } from "recoil";
+import { linkState } from "@/atoms/linksAtom";
+import { notFoundState } from "@/atoms/notFoundAtom";
 
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import {
 	Form,
 	FormControl,
-	FormDescription,
 	FormField,
 	FormItem,
-	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
-import { Link } from "@/lib/types";
-import { Dispatch, SetStateAction } from "react";
-import { supabase } from "@/lib/supabase";
-// import { createClient } from "@/lib/supabase";
-import { uniqueLinks } from "@/lib/unique";
 
-import { useSetRecoilState } from 'recoil'
-import { linkState } from "@/atoms/linksAtom";
+import { Link } from "@/lib/types";
+import { supabase } from "@/lib/supabase";
+import { uniqueLinks } from "@/lib/unique";
 
 const formSchema = z.object({
 	search: z.string(),
 });
 
 const SearchBar = () => {
-	const setLinks = useSetRecoilState(linkState)
+	const setLinks = useSetRecoilState(linkState);
+	const setNotFound = useSetRecoilState(notFoundState);
 
-	// 1. Define your form.
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -39,11 +36,9 @@ const SearchBar = () => {
 		},
 	});
 
-	// 2. Define a submit handler.
 	async function onSubmit(values: z.infer<typeof formSchema>) {
+		setNotFound(false); // in case previous search came empty
 		const { search } = values;
-		// todo: get all elements when search is empty
-		// todo: search with each letter change
 
 		if (search.length === 0) {
 			const { data } = await supabase.from("links").select("*");
@@ -56,27 +51,32 @@ const SearchBar = () => {
 
 		// -> search each individual keyword
 		const result: Link[] = [];
-		await Promise.all(keywords.map(async (keyword) => {
-			const { data: nameData } = await supabase
-				.from("links")
-				.select("*")
-				.ilike("name", `%${keyword}%`);
-			const { data: descData } = await supabase
-				.from("links")
-				.select("*")
-				.ilike("desc", `%${keyword}%`);
-			const { data: tagsData } = await supabase
-				.from("links")
-				.select("*")
-				.ilike("tags", `%${keyword}%`);
+		await Promise.all(
+			keywords.map(async (keyword) => {
+				const { data: nameData } = await supabase
+					.from("links")
+					.select("*")
+					.ilike("name", `%${keyword}%`);
+				const { data: descData } = await supabase
+					.from("links")
+					.select("*")
+					.ilike("desc", `%${keyword}%`);
+				const { data: tagsData } = await supabase
+					.from("links")
+					.select("*")
+					.ilike("tags", `%${keyword}%`);
 
-			result.push(...(nameData || []));
-			result.push(...(descData || []));
-			result.push(...(tagsData || []));
-		}))
+				result.push(...(nameData || []));
+				result.push(...(descData || []));
+				result.push(...(tagsData || []));
+			})
+		);
 
 		// -> join the string getting rid of duplicates
 		const uniqueResult = uniqueLinks(result);
+
+		// search came empty
+		if (uniqueResult.length === 0) setNotFound(true);
 		setLinks(uniqueResult);
 	}
 
