@@ -2,6 +2,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+
 import {
 	Form,
 	FormControl,
@@ -24,6 +27,8 @@ const FormLink = ({
 	code,
 	desc,
 	tags,
+	submitted,
+	setSubmitted,
 }: {
 	onSubmit(values: any): void;
 	name?: string;
@@ -31,6 +36,8 @@ const FormLink = ({
 	code?: string;
 	desc?: string;
 	tags?: string;
+	submitted: boolean;
+	setSubmitted: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -126,7 +133,8 @@ const FormLink = ({
 					)}
 				/>
 
-				<Button type="submit" className="mt-2">
+				<Button type="submit" className="mt-2" disabled={submitted}>
+					{submitted && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
 					Add Link
 				</Button>
 			</form>

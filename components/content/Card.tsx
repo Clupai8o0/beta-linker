@@ -43,7 +43,6 @@ const Card = ({
 				once: true,
 				amount: 0.2,
 			}}
-			key={generateKey()}
 		>
 			<ScCard className="w-full shadow-md">
 				<CardHeader>
@@ -55,7 +54,9 @@ const Card = ({
 								alt="Link image"
 								className="object-cover"
 								fill={true}
-								onLoadingComplete={() => setImgLoading(false)}
+								onLoad={() => setImgLoading(false)}
+								priority={false}
+								sizes="(max-width: 768px) 80vw, (max-width: 1024px) 40vw, 30vw"
 							/>
 						</div>
 					</NextLink>

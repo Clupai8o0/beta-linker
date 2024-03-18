@@ -26,15 +26,48 @@ import {
 } from "../ui/drawer";
 import { Button } from "../ui/button";
 import { ScrollArea } from "../ui/scroll-area";
+import { toast } from "sonner";
 
 import { formSchema } from "@/lib/form";
+import { supabase } from "@/lib/supabase";
 
 const Add = () => {
 	const [open, setOpen] = useState(false);
+	const [submitted, setSubmitted] = useState(false)
 	const isDesktop = useMediaQuery("(min-width: 768px)");
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		console.log(values);
+	async function onSubmit({ name, code, url, desc, tags}: z.infer<typeof formSchema>) {
+		setSubmitted(true);
+
+		const resp = await fetch(
+			`${process.env.NEXT_PUBLIC_PORT}api/app/add-image`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "Application/JSON",
+				},
+				body: JSON.stringify({
+					website_url: url,
+				}),
+			}
+		);
+		const { data: path } = await resp.json();
+
+		await supabase.from("links").insert({
+			name,
+			website_url: url,
+			github_url: code,
+			desc,
+			tags,
+			image_url: path
+		}).select();
+
+
+		setSubmitted(false)
+		setOpen(false)
+		toast("Link has been created", {
+			description: `Link name - ${name}`
+		})
 	}
 
 	if (isDesktop) {
@@ -53,7 +86,7 @@ const Add = () => {
 						</DialogDescription>
 
 						<ScrollArea className="h-[400px] rounded-md border">
-							<FormLink onSubmit={onSubmit} />
+							<FormLink onSubmit={onSubmit} submitted={submitted} setSubmitted={setSubmitted} />
 						</ScrollArea>
 					</DialogHeader>
 				</DialogContent>
@@ -75,7 +108,11 @@ const Add = () => {
 						</DrawerDescription>
 					</DrawerHeader>
 					<ScrollArea className="h-[400px] rounded-md border mx-4">
-						<FormLink onSubmit={onSubmit} />
+						<FormLink
+							onSubmit={onSubmit}
+							submitted={submitted}
+							setSubmitted={setSubmitted}
+						/>
 					</ScrollArea>
 					<DrawerFooter className="pt-4">
 						<DrawerClose asChild>

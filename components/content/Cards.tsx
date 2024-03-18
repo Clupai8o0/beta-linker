@@ -5,7 +5,9 @@ import { notFoundState } from "@/atoms/notFoundAtom";
 
 import Card from "./Card";
 import SkeletonCards from "./SkeletonCards";
+
 import { supabase } from "@/lib/supabase";
+import { generateKey } from "@/lib/utils";
 
 const Cards = () => {
 	const [links, setLinks] = useRecoilState(linkState);
@@ -23,7 +25,7 @@ const Cards = () => {
 	return !notFound ? (
 		<main className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
 			{links.length !== 0 ? (
-				links.map((link) => <Card {...link} />)
+				links.map((link) => <Card {...link} key={generateKey()} />)
 			) : (
 				<SkeletonCards />
 			)}
