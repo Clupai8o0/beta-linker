@@ -1,8 +1,9 @@
 import puppeteer from "puppeteer";
-import { handleSuccess, handleError } from "@/lib/api";
-import { v4 as generateKey } from "uuid";
 import { decode } from "base64-arraybuffer";
+
+import { handleSuccess, handleError } from "@/lib/api";
 import { supabase } from "@/lib/supabase";
+import { generateKey } from "@/lib/utils";
 
 export async function POST(req: Request) {
 	const { website_url } = await req.json();
@@ -26,11 +27,10 @@ export async function POST(req: Request) {
 		});
 		//todo: go thru supabase security
 
-		//* saving to bucket
-
+		// saving to bucket
 		const { data } = await supabase.storage
 			.from("links")
-			.upload(`public/0123.jpg`, decode(file), {
+			.upload(`public/${key}.jpg`, decode(file), {
 				contentType: "image/jpg",
 			});
 
