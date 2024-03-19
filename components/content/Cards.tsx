@@ -25,7 +25,7 @@ const Cards = () => {
 	return !notFound ? (
 		<main className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
 			{links.length !== 0 ? (
-				links.map((link) => <Card {...link} key={generateKey()} />)
+				links.map((link) => <Card link={link} key={generateKey()} />)
 			) : (
 				<SkeletonCards />
 			)}

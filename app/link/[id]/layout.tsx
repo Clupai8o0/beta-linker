@@ -7,8 +7,8 @@ export async function generateMetadata({
 }) {
 	const { data } = await supabase.from("links").select("name").eq("id", id);
 
-	if (data) return { title: `Link - ${data[0].name}` };
-	else return { title: "Link - Error" };
+	if (data && data.length !== 0) return { title: `Link - ${data[0].name}` };
+	else return { title: "Not Found" };
 }
 
 export default function RootLayout({

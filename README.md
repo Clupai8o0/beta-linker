@@ -9,3 +9,4 @@
 - [x] Global state management
 - [ ] Security rules
 - [ ] Definitely reduce and manage font + sizing
+- [ ] Also why initial transition twice?

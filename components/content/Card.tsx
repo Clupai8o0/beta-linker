@@ -21,16 +21,11 @@ import { Badge } from "../ui/badge";
 import { generateKey } from "@/lib/utils";
 import { Link } from "@/lib/types";
 import { getImgUrl } from "@/lib/supabase";
+import Edit from "./EditLink";
+import Delete from "./DeleteLink";
 
-const Card = ({
-	id,
-	desc,
-	github_url,
-	image_url,
-	name,
-	tags,
-	website_url,
-}: Link) => {
+const Card = ({ link }: { link: Link }) => {
+	const { id, desc, github_url, image_url, name, tags, website_url } = link;
 	const [imgLoading, setImgLoading] = useState(true);
 
 	return (
@@ -86,12 +81,8 @@ const Card = ({
 						</NextLink>
 					</div>
 					<div className="flex gap-2">
-						<Button variant="outline" size="icon">
-							<Pen />
-						</Button>
-						<Button variant="destructive" size="icon">
-							<Trash />
-						</Button>
+						<Edit link={link} />
+						<Delete id={id} />
 					</div>
 				</CardFooter>
 			</ScCard>
