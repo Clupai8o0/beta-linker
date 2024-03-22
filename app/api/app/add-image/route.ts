@@ -1,42 +1,51 @@
-import puppeteer from "puppeteer";
+import { handleError, handleSuccess } from "@/lib/api";
+import { supabase } from "@/lib/supabase";
+import chromium from "chrome-aws-lambda";
+import { NextRequest } from "next/server";
+import playwright from "playwright-core";
 import { decode } from "base64-arraybuffer";
 
-import { handleSuccess, handleError } from "@/lib/api";
-import { supabase } from "@/lib/supabase";
-import { generateKey } from "@/lib/utils";
-
-export async function POST(req: Request) {
-	const { website_url } = await req.json();
-
+export async function POST(req: NextRequest) {
 	try {
-		// opening a browser
-		const browser = await puppeteer.launch({
-			headless: true,
-		});
-		const page = await browser.newPage();
-		await page.setViewport({ width: 1280, height: 720 });
-		await page.goto(website_url, { waitUntil: "networkidle0" });
+		const browser = await playwright.chromium.launch({
+			args: [...chromium.args, "--font-render-hinting=none", "--hide-scrollbars"], // This way fix rendering issues with specific fonts
+			executablePath: await chromium.executablePath,
+			// process.env.NODE_ENV === "production"
+			// 	? await chromium.executablePath
+			// 	: "/chrome/win64-123.0.6312.58",
 
-		// Generating screenshot
-		const key = generateKey();
-		const file = await page.screenshot({
-			encoding: "base64",
-			optimizeForSpeed: false,
-			quality: 70,
+			// headless:
+			// 	process.env.NODE_ENV === "production" ? chromium.headless : true,
+			headless: true
+		});
+
+		const context = await browser.newContext();
+
+		const page = await context.newPage();
+		console.log("page created")
+
+		await page.setViewportSize({ width: 1280, height: 720 })
+		await page.goto("https://github.com/", {
+			waitUntil: "load",
+		});
+
+		const buffer = await page.screenshot({
 			type: "jpeg",
-		});
-		//todo: go thru supabase security
+			quality: 70
+		})
+		const file = buffer.toString("base64")
 
-		// saving to bucket
-		const { data } = await supabase.storage
-			.from("links")
-			.upload(`public/${key}.jpg`, decode(file), {
-				contentType: "image/jpg",
-			});
+		const { data, error } = await supabase.storage.from("links").upload(`public/test.jpg`, decode(file), {
+			contentType: "image/jpg"
+		})
+
+		//! incase
+		console.log(data, error)
 
 		await browser.close();
-		return handleSuccess("Successfully created image", data?.path || "");
+
+		return handleSuccess("Successfully created image", data?.path || "")
 	} catch (e) {
-		return handleError("Could not create image", e);
+		return handleError("Could not create image", e)
 	}
 }
